@@ -1,0 +1,4 @@
+# Conservative, explainable CPU-only defaults for fly-brain flicker detection.
+threshold: 0.55
+min_frequency_hz: 2.0
+max_frequency_hz: 120.0
