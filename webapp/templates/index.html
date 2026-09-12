@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InfernoTech — Community Wildfire Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #15181c; --ink-raised: #1c2025; --paper: #ede6d6; --paper-dim: #ddd4bd;
+    --forest: #3f6b4f; --amber: #e3a23d; --ember: #d8482f; --smoke: #8a8f98; --line: #2b3038;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ink);
+    background-image: radial-gradient(circle at 12% 8%, rgba(227,162,61,0.05), transparent 40%),
+      repeating-radial-gradient(circle at 85% 90%, transparent 0, transparent 38px, rgba(138,143,152,0.035) 39px, transparent 40px);
+    color: var(--paper); font-family: 'Inter', sans-serif;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  header { padding: 22px 28px 20px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; color: var(--smoke); text-transform: uppercase; margin-bottom: 6px; }
+  header h1 { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; font-weight: 700; font-size: 1.7rem; margin: 0 0 8px; }
+  header p.sub { margin: 0 0 16px; color: var(--smoke); font-size: 0.88rem; max-width: 680px; line-height: 1.5; }
+  .search-row { display: flex; gap: 8px; max-width: 560px; }
+  .search-row input { flex: 1; padding: 10px 12px; border-radius: 3px; border: 1px solid var(--line); background: var(--ink-raised); color: var(--paper); font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; }
+  .search-row select { padding: 10px; border-radius: 3px; border: 1px solid var(--line); background: var(--ink-raised); color: var(--paper); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; }
+  .search-row button { background: var(--amber); color: #1b1304; border: none; padding: 10px 20px; border-radius: 3px; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
+  .search-row button:hover { background: #f0b459; }
+  .status-line { margin-top: 14px; display: flex; align-items: center; gap: 10px; font-size: 0.82rem; flex-wrap: wrap; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .status-dot--forest { background: var(--forest); box-shadow: 0 0 8px var(--forest); }
+  .status-dot--amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .status-dot--ember { background: var(--ember); box-shadow: 0 0 8px var(--ember); }
+  .status-dot--smoke { background: var(--smoke); }
+  .status-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; border: 1px solid var(--line); }
+  .status-detail { color: var(--smoke); }
+  .layout { display: flex; gap: 20px; padding: 22px 28px; align-items: flex-start; flex-wrap: wrap; }
+  .map-frame { flex: 2; min-width: 320px; position: relative; padding: 14px; }
+  .map-inner { border: 1px solid var(--line); overflow: hidden; background: var(--ink-raised); }
+  .map-inner iframe { width: 100%; height: 540px; border: none; display: block; }
+  .corner { position: absolute; width: 18px; height: 18px; border-color: var(--amber); z-index: 2; }
+  .corner.tl { top: 0; left: 0; border-top: 2px solid var(--amber); border-left: 2px solid var(--amber); }
+  .corner.tr { top: 0; right: 0; border-top: 2px solid var(--amber); border-right: 2px solid var(--amber); }
+  .corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--amber); border-left: 2px solid var(--amber); }
+  .corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--amber); border-right: 2px solid var(--amber); }
+  .log-panel { flex: 1; min-width: 300px; background: var(--paper); color: #1b1a16; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .log-header { background: #1b1a16; color: var(--paper); padding: 10px 16px; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85rem; font-weight: 600; }
+  .log-body { padding: 4px 16px 16px; }
+  .log-row { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--paper-dim); font-size: 0.86rem; align-items: baseline; }
+  .log-row .idx { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: #8a7f5f; flex: 0 0 26px; }
+  .log-row .label { flex: 1; color: #3a362a; }
+  .log-row .val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: #1b1a16; }
+  .compass-wrap { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--paper-dim); margin-bottom: 4px; }
+  .compass-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.76rem; color: #3a362a; line-height: 1.5; }
+  .compass-label b { display: block; color: #1b1a16; font-size: 0.95rem; }
+  button.action { width: 100%; margin-top: 14px; padding: 11px 16px; border-radius: 3px; border: none; background: #1b1a16; color: var(--paper); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; font-size: 0.8rem; cursor: pointer; }
+  button.action:hover { background: #302c22; }
+  button.action:disabled { opacity: 0.55; cursor: default; }
+  #brief { margin-top: 12px; padding: 12px; background: #fbf8f0; border: 1px solid var(--paper-dim); border-left: 3px solid var(--amber); font-size: 0.85rem; line-height: 1.55; white-space: pre-wrap; display: none; color: #2b2818; }
+  .field-report { margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--paper-dim); }
+  .field-report .eyebrow2 { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: #8a7f5f; text-transform: uppercase; margin-bottom: 6px; }
+  .field-report h2 { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 1rem; margin: 0 0 4px; color: #1b1a16; }
+  .field-report .sub2 { color: #5a5340; font-size: 0.8rem; margin: 0 0 12px; }
+  .risk-row { display: flex; gap: 8px; }
+  .risk-row input { flex: 1; padding: 9px 12px; border-radius: 3px; border: 1px solid var(--paper-dim); background: #fbf8f0; color: #1b1a16; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; }
+  .risk-row button { background: #1b1a16; color: var(--paper); border: none; padding: 9px 18px; border-radius: 3px; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+  #riskResult { margin-top: 14px; display: none; }
+  .risk-score-line { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .risk-score-num { font-family: 'IBM Plex Mono', monospace; font-size: 1.8rem; font-weight: 600; color: #1b1a16; }
+  .risk-chip { font-family: 'IBM Plex Mono', monospace; padding: 2px 10px; border-radius: 2px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; }
+  .risk-chip--low { background: var(--forest); }
+  .risk-chip--moderate { background: var(--amber); color: #1b1304; }
+  .risk-chip--high { background: #c9762f; }
+  .risk-chip--extreme { background: var(--ember); }
+  .risk-reasons { font-size: 0.78rem; color: #5a5340; margin: 0 0 10px; padding-left: 16px; }
+  .risk-blurb { font-size: 0.85rem; color: #2b2818; line-height: 1.5; }
+  .stamp { display: inline-block; margin-top: 10px; padding: 3px 8px; border: 1px solid #a89a6b; color: #7a6f4d; font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; }
+  .guardian-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .guardian-row input { flex: 1 1 120px; padding: 8px 10px; border-radius: 3px; border: 1px solid var(--paper-dim); background: #fbf8f0; color: #1b1a16; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; }
+  #guardianResult { margin-top: 12px; display: none; font-size: 0.82rem; color: #2b2818; }
+  @media (max-width: 720px) { .map-inner iframe { height: 380px; } }
+</style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Field Station 07 · InfernoTech</div>
+    <h1>Community Wildfire Watch</h1>
+    <p class="sub">Search any place worldwide for live satellite fire hotspots and a projected spread direction, cross-check with ground-camera confirmations, file a pre-disaster risk check, or submit avoided-deforestation MRV data for carbon-credit financing — with a plain-language Gemini brief throughout.</p>
+
+    <form method="get" action="/" class="search-row">
+      <input type="text" name="place" placeholder="e.g. Los Angeles, USA" value="{{ place or '' }}">
+      <select name="days">
+        <option value="1" {{ 'selected' if days == 1 else '' }}>Last 1 day</option>
+        <option value="2" {{ 'selected' if days == 2 else '' }}>Last 2 days</option>
+        <option value="3" {{ 'selected' if days == 3 else '' }}>Last 3 days</option>
+        <option value="5" {{ 'selected' if days == 5 else '' }}>Last 5 days</option>
+      </select>
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="status-line">
+      {% if meta.mode == 'live' and meta.hotspot_count and meta.hotspot_count > 0 %}
+        <span class="status-dot status-dot--ember"></span><span class="status-tag mono">Live — Active</span>
+      {% elif meta.mode == 'live' %}
+        <span class="status-dot status-dot--forest"></span><span class="status-tag mono">Live — Clear</span>
+      {% elif meta.mode == 'fallback' %}
+        <span class="status-dot status-dot--amber"></span><span class="status-tag mono">Fallback</span>
+      {% else %}
+        <span class="status-dot status-dot--smoke"></span><span class="status-tag mono">Demo</span>
+      {% endif %}
+      <span class="status-detail">
+        {% if meta.mode == 'live' %}{{ meta.location }} — {{ meta.hotspot_count }} hotspot(s) detected
+        {% elif meta.mode == 'fallback' %}{{ meta.error }}
+        {% else %}{{ meta.location }} — search a place above for live data anywhere{% endif %}
+      </span>
+      {% if meta.ridgeline_count %}
+      <span class="status-tag mono" style="border-color:#c9762f;">&#128247; {{ meta.ridgeline_count }} camera-confirmed</span>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="map-frame">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+      <div class="map-inner">
+        <iframe srcdoc="{{ map_html }}" title="Wildfire map"></iframe>
+      </div>
+    </div>
+
+    <div class="log-panel">
+      <div class="log-header">Station Log</div>
+      <div class="log-body">
+        {% for name, val in stats.items() %}
+        <div class="log-row">
+          <span class="idx mono">{{ '%03d' | format(loop.index) }}</span>
+          <span class="label">{{ name }}</span>
+          <span class="val">{{ val }}</span>
+        </div>
+        {% endfor %}
+
+        {% if meta.wind_direction_deg is defined %}
+        <div class="compass-wrap">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="29" fill="none" stroke="#a89a6b" stroke-width="1"/>
+            <text x="32" y="10" text-anchor="middle" font-size="7" fill="#7a6f4d" font-family="IBM Plex Mono">N</text>
+            <text x="32" y="60" text-anchor="middle" font-size="7" fill="#7a6f4d" font-family="IBM Plex Mono">S</text>
+            <text x="6" y="35" text-anchor="middle" font-size="7" fill="#7a6f4d" font-family="IBM Plex Mono">W</text>
+            <text x="58" y="35" text-anchor="middle" font-size="7" fill="#7a6f4d" font-family="IBM Plex Mono">E</text>
+            <g style="transform-origin: 32px 32px; transform: rotate({{ ((meta.wind_direction_deg + 180) % 360) }}deg);">
+              <line x1="32" y1="32" x2="32" y2="12" stroke="#d8482f" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="3" fill="#1b1a16"/>
+            </g>
+          </svg>
+          <div class="compass-label">Wind direction<br><b>{{ meta.wind_speed_kmh }} km/h</b></div>
+        </div>
+        {% endif %}
+
+        <button class="action" id="briefBtn" onclick="getBrief()">Request Gemini Brief</button>
+        <div id="brief"></div>
+
+        <div class="field-report">
+          <div class="eyebrow2">Field Report</div>
+          <h2>Pre-Disaster Risk Check</h2>
+          <p class="sub2">File an address to get a heuristic wildfire-weather risk score, before anything's burning nearby.</p>
+          <div class="risk-row">
+            <input type="text" id="riskAddress" placeholder="e.g. 123 Main St, Los Angeles, CA">
+            <button id="riskBtn" onclick="checkRisk()">Check</button>
+          </div>
+          <div id="riskResult"></div>
+        </div>
+
+        <div class="field-report">
+          <div class="eyebrow2">Carbon Registry</div>
+          <h2>Submit Avoided-Deforestation MRV</h2>
+          <p class="sub2">Sends a VM0015 monitoring document to a connected Hedera Guardian instance. Requires GUARDIAN_API_URL + GUARDIAN_OWNER_DID to be configured against a running Guardian with VM0015 imported.</p>
+          <div class="guardian-row">
+            <input type="text" id="gLocation" placeholder="Location name">
+            <input type="text" id="gLat" placeholder="Lat">
+            <input type="text" id="gLon" placeholder="Lon">
+            <input type="text" id="gArea" placeholder="Protected ha">
+            <input type="text" id="gStart" placeholder="Start (YYYY-MM-DD)">
+            <input type="text" id="gEnd" placeholder="End (YYYY-MM-DD)">
+          </div>
+          <button class="action" id="guardianBtn" onclick="submitGuardian()">Submit MRV to Guardian</button>
+          <div id="guardianResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function getBrief() {
+      const btn = document.getElementById('briefBtn');
+      const box = document.getElementById('brief');
+      btn.disabled = true; btn.textContent = 'Transmitting…';
+      box.style.display = 'block'; box.textContent = '';
+      try {
+        const res = await fetch('/api/community-brief', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place: {{ (place or '') | tojson }}, days: {{ days | tojson }} })
+        });
+        const data = await res.json();
+        box.textContent = data.brief;
+      } catch (e) { box.textContent = 'Could not generate brief: ' + e; }
+      finally { btn.disabled = false; btn.textContent = 'Request Gemini Brief'; }
+    }
+
+    async function checkRisk() {
+      const btn = document.getElementById('riskBtn');
+      const box = document.getElementById('riskResult');
+      const address = document.getElementById('riskAddress').value.trim();
+      if (!address) return;
+      btn.disabled = true; btn.textContent = 'Checking…';
+      box.style.display = 'block'; box.innerHTML = '';
+      try {
+        const res = await fetch('/api/risk-check', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address: address })
+        });
+        const data = await res.json();
+        if (!res.ok) { box.innerHTML = '<div class="stamp">' + (data.error || 'Could not check that address.') + '</div>'; return; }
+        const chipClass = 'risk-chip--' + data.label.toLowerCase();
+        const reasonsHtml = data.reasons.map(r => '<li>' + r + '</li>').join('');
+        box.innerHTML =
+          '<div class="risk-score-line"><span class="risk-score-num">' + data.score + '/100</span>' +
+          '<span class="risk-chip ' + chipClass + '">' + data.label + '</span></div>' +
+          '<ul class="risk-reasons">' + reasonsHtml + '</ul>' +
+          '<div class="risk-blurb">' + data.blurb + '</div>' +
+          '<div class="stamp">Simplified estimate — not an official rating</div>';
+      } catch (e) { box.innerHTML = '<div class="stamp">Could not check that address</div>'; }
+      finally { btn.disabled = false; btn.textContent = 'Check'; }
+    }
+
+    async function submitGuardian() {
+      const btn = document.getElementById('guardianBtn');
+      const box = document.getElementById('guardianResult');
+      const payload = {
+        location_name: document.getElementById('gLocation').value.trim(),
+        lat: parseFloat(document.getElementById('gLat').value),
+        lon: parseFloat(document.getElementById('gLon').value),
+        protected_area_ha: parseFloat(document.getElementById('gArea').value),
+        monitoring_start: document.getElementById('gStart').value.trim(),
+        monitoring_end: document.getElementById('gEnd').value.trim(),
+      };
+      btn.disabled = true; btn.textContent = 'Submitting…';
+      box.style.display = 'block'; box.innerHTML = '';
+      try {
+        const res = await fetch('/api/guardian-mrv', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) { box.innerHTML = '<div class="stamp">' + (data.error || 'Submission failed.') + '</div>'; return; }
+        box.innerHTML = '<div class="stamp">Submitted — ' + JSON.stringify(data.result) + '</div>';
+      } catch (e) { box.innerHTML = '<div class="stamp">Could not submit: ' + e + '</div>'; }
+      finally { btn.disabled = false; btn.textContent = 'Submit MRV to Guardian'; }
+    }
+  </script>
+</body>
+</html>

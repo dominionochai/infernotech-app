@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"model": "SAMGeo", "label": "SAMGeo predicted burn mask"}, "geometry": {"type": "Polygon", "coordinates": [[[23.9, 37.788], [23.975, 37.8], [23.985, 37.752], [23.912, 37.742], [23.9, 37.788]]]}}]}

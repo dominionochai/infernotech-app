@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"label": "Copernicus vs SAMGeo difference"}, "geometry": {"type": "Polygon", "coordinates": [[[23.985, 37.752], [23.99, 37.75], [23.987, 37.744], [23.98, 37.746], [23.985, 37.752]]]}}]}

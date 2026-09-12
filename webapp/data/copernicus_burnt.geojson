@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"source": "Copernicus EMSR", "label": "Observed burnt event area"}, "geometry": {"type": "Polygon", "coordinates": [[[23.9, 37.79], [23.98, 37.8], [23.99, 37.75], [23.92, 37.74], [23.9, 37.79]]]}}]}

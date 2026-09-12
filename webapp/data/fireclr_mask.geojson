@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"model": "FireCLR", "label": "FireCLR predicted burn mask"}, "geometry": {"type": "Polygon", "coordinates": [[[23.905, 37.785], [23.97, 37.795], [23.975, 37.755], [23.915, 37.745], [23.905, 37.785]]]}}]}

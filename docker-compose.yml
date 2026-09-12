@@ -1,0 +1,43 @@
+# InfernoTech — Unified Wildfire Response Platform
+#
+# Combines three independently-real systems:
+#   infernotech  - this repo's Flask app (satellite detection, Gemini briefs,
+#                  risk scoring, spread projection) - always runs.
+#   ridgeline    - github.com/ayaan-gupta/ridgeline, ground-camera smoke
+#                  confirmation (Next.js + FastAPI model service + Postgres).
+#                  NOT included here - clone it as a sibling directory first:
+#                    git clone https://github.com/ayaan-gupta/ridgeline.git
+#                  then uncomment the ridgeline service below. Its own
+#                  docker-compose/README covers its internal services; this
+#                  file only adds the one that matters to InfernoTech - its
+#                  web service exposing the documented REST API.
+#
+# Hedera Guardian (carbon-credit MRV) is NOT included here at all - it's a
+# large, separate multi-service platform (guardian-service, worker-service,
+# MongoDB, IPFS, a Hedera account) meant to run as its own deployment.
+# InfernoTech talks to an already-running Guardian instance purely through
+# its documented external-data REST API (see webapp/guardian_client.py) -
+# point GUARDIAN_API_URL at wherever that instance lives.
+
+services:
+  infernotech:
+    build: ./webapp
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./webapp/.env
+    environment:
+      - RIDGELINE_API_URL=http://ridgeline-web:3100
+    # depends_on:
+    #   - ridgeline-web   # uncomment once the ridgeline service below is enabled
+
+  # --- Uncomment once you've cloned ridgeline as a sibling directory ---
+  # ridgeline-web:
+  #   build: ../ridgeline
+  #   ports:
+  #     - "3100:3100"
+  #   env_file:
+  #     - ../ridgeline/.env
+  #   # Ridgeline has its own model service + Postgres per its README -
+  #   # see that repo's docker-compose.yml for the full stack; this just
+  #   # shows the piece InfernoTech talks to.
