@@ -1,2 +1,5 @@
 PyYAML>=6.0
 pytest>=7.0
+opencv-python>=4.8
+PyWavelets>=1.5
+hmmlearn>=0.3
