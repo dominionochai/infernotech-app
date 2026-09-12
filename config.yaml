@@ -2,3 +2,17 @@
 threshold: 0.55
 min_frequency_hz: 2.0
 max_frequency_hz: 120.0
+video:
+  threshold: 0.08
+  resize_width: 320
+  resize_height: 240
+  bin_ms: 33
+  context_bins: 16
+  grid_rows: 2
+  grid_cols: 2
+features:
+  wavelet: db2
+  wavelet_level: 3
+classifier:
+  method: rule
+  flame_threshold: 0.55
