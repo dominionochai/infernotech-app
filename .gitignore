@@ -1,0 +1,16 @@
+# Local Python environments
+venv/
+.venv/
+env/
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# OS files
+.DS_Store
+
+# Generated detector model artifacts
+models/*.joblib
